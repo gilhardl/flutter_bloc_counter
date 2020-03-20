@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_counter/blocs/counter/counter_bloc.dart';
+import 'package:flutter_bloc_counter/blocs/counter/counter_event.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,36 +14,22 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: BlocProvider(
-          create: (context) => CounterBloc(),
-          child: MyHomePage(title: 'BLoC Counter')),
+      home: BlocProvider<CounterBloc>(
+        create: (context) => CounterBloc(),
+        child: HomePage(),
+      ),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final CounterBloc counterBloc = BlocProvider.of<CounterBloc>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('BLoc Counter'),
       ),
       body: Center(
         child: Column(
@@ -51,17 +38,38 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            BlocBuilder<CounterBloc, int>(
+              builder: (context, counterState) {
+                return Text(
+                  '$counterState',
+                  style: Theme.of(context).textTheme.headline4,
+                );
+              },
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+      floatingActionButton: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: () => counterBloc.add(CounterEvent.decrement),
+              tooltip: 'Decrement',
+              child: Icon(Icons.remove),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: () => counterBloc.add(CounterEvent.increment),
+              tooltip: 'Increment',
+              child: Icon(Icons.add),
+            ),
+          ),
+        ],
       ),
     );
   }
