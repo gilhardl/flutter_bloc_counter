@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc_counter/blocs/counter/counter_bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +13,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'BLoC Counter'),
+      home: BlocProvider(
+          create: (context) => CounterBloc(),
+          child: MyHomePage(title: 'BLoC Counter')),
     );
   }
 }
